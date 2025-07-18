@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import List
+from typing import List, Union, Iterator
 import itertools
 
 
@@ -15,6 +15,9 @@ def is_monotonic(a, b, n) -> int:
     return difference
 
 
+def is_sequential(a, b, n) -> int:
+    return (a ^ b).bit_count() == 1
+
 class GrayCode:
     def __init__(self, sensor_positions: List[int], track: int, n: int):
         self.track = track
@@ -27,9 +30,9 @@ class GrayCode:
 
     def _check_sensor(self, sensor_position: int, offset: int) -> bool:
         index = (sensor_position + offset) % self.n_track
-        return self.track & 1<<index
+        return self.track & 1<<index != 0
 
-    def get_reading(self, offset: int) -> str:
+    def get_reading(self, offset: int) -> int:
         value = 0
         for i, sensor_index in enumerate(self.sensor_positions[::-1]):
             if self.track & 1 << ((sensor_index+offset)%self.n_track):
@@ -41,7 +44,7 @@ class GrayCode:
         last_value = self.get_reading(self.n_track-1)
         for i in range(self.n_track):
             v = self.get_reading(i)
-            if not is_monotonic(v, last_value, self.n_sensors):
+            if not is_sequential(v, last_value, self.n_sensors):
                 return False
             last_value = v
             if v in values:
@@ -63,7 +66,7 @@ class GrayCode:
             display_track = "".join(f"\033[93m{j}\033[0m" if i in self.sensor_positions else f"{j}" for i, j in enumerate(display_track))
 
             if values.count(v) == 1:
-                if is_monotonic(v, last_value, self.n_sensors):
+                if is_sequential(v, last_value, self.n_sensors):
                     print(f'\033[92m{v:0{self.n_sensors}b}\033[0m {display_track}')
                 else:
                     print(f'\033[91m{v:0{self.n_sensors}b}\033[0m {display_track}')
@@ -84,26 +87,50 @@ def unique_permutations(elements):
                 yield (first_element,) + sub_permutation
 
 
-def find_gray_code(sensors: List[int], n: int) -> GrayCode:
+def next_gray_code(sensors: List[int], n: int) -> Iterator[GrayCode]:
     """Find a Gray Code based on the a sensor configuration and track length"""
     # There cannot be a Gray Code with an odd track length
     if n % 2:
-        return None
+        return
     track_sequence = "1"*int(n/2) + "0"*int(n/2)
-    # for track in itertools.permutations(track_sequence):
     for track in unique_permutations(track_sequence):
         track = int("".join(track), 2)
         g = GrayCode(sensors, track, n)
         if g.check_silent():
-            return g
-    return None
+            yield g
+    return
 
+
+def find_gray_code(sensors: List[int], n: int) -> Union[GrayCode, None]:
+    """Find a Gray Code based on the a sensor configuration and track length"""
+    # There cannot be a Gray Code with an odd track length
+    gray_code_generator = next_gray_code(sensors, n)
+    try:
+        return next(gray_code_generator)
+    except StopIteration:
+        return None
+
+def find_sensor_gray_codes(n_sensors, n_track, first_only=True) -> List[GrayCode]:
+    solutions = []
+    for sensors in itertools.combinations(range(1, n_track), n_sensors-1):
+        sensors = [0, *sensors] # Always have the first sensor be the first index to avoid duplicates
+        #print(f'Trying {sensors}')
+        g = find_gray_code(sensors, n_track)
+        if g:
+            print("Success")
+            print(f"Sensors: {g.sensor_positions}")
+            print(f"Track: {g.track:0{n_track}b}")
+            g.check()
+            solutions.append(g)
+            if first_only:
+                return [g]
+    return solutions
 
 def find_sensor_gray_code(n_sensors, n_track, first_only=True):
     solution = None
     for sensors in itertools.combinations(range(1, n_track), n_sensors-1):
         sensors = [0, *sensors] # Always have the first sensor be the first index to avoid duplicates
-        print(f'Trying {sensors}')
+        #print(f'Trying {sensors}')
         g = find_gray_code(sensors, n_track)
         if g:
             print("Success")
@@ -119,6 +146,9 @@ def find_sensor_gray_code(n_sensors, n_track, first_only=True):
 
 def find_minimum_gray_code_by_track(n_track, first_only=True):
     for n_sensors in range(1, n_track):
+        # Skip checking when there are not enough sensors
+        if n_track > 1<<n_sensors:
+            continue
         print(f"Checking {n_sensors} sensors")
         g = find_sensor_gray_code(n_sensors, n_track, first_only)
         if g:
@@ -192,8 +222,16 @@ def find_max_gray_code_by_sensors(n_sensors, first_only=True):
 # g = GrayCode([i for i in range(0, 360, 40)], 0b111111111111111111111111111111111111111111111111111111000000000000000001111000000111111100000000000000000000000000111110001111111111111111111000000000000000000000000000000001100001111111110000000000000000001111111111111111100011110000000000000001111110000011111100111001111000000000001110011111111000111110000000111110000001111111001111110000000000000000001100, 360)
 # g.check()
 
-g = find_gray_code([i for i in range(0, 504, 56)], 504)
-g.check()
+for n in range(2, 60, 2):
+    find_minimum_gray_code_by_track(n)
+#for factor in range(2, 1<<6):
+#    print(f"##### Finding {6*factor}")
+#    g =  find_gray_code([i for i in range(0, 6*factor, factor)], 6*factor)
+#    if g:
+#        g.check()
+#g = find_gray_code([i for i in range(0, 504, 56)], 504)
+#if g:
+#    g.check()
 
 # g = GrayCode([0, 4, 8, 12, 16], 0b11111110001110000000, 20)
 
