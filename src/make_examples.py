@@ -23,7 +23,7 @@ def main():
     with open("examples/README.md", "w", encoding="utf-8") as md_file:
         md_file.write("# Example Single Track Gray Codes\n")
         for i, gray_codes in gray_codes_by_n_sensors.items():
-            md_file.write(f"## {i} Sensors")
+            md_file.write(f"## {i} Sensors\n")
             md_file.write("| Visualization | Track Size | Resolution | Sensor Positions | Track | Position Lookup Table |\n")
             md_file.write("| ---- | ---- | ---- | ---- | ---- | ---- |\n")
             for (g, visualization) in gray_codes:
