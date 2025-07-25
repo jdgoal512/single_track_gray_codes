@@ -30,8 +30,8 @@ def main():
             md_file.write("| Visualization | Number of Positions | Resolution | Sensor Positions | Track | Position Lookup Table |\n")
             md_file.write("| ---- | ---- | ---- | ---- | ---- | ---- |\n")
             for (g, visualization) in gray_codes:
-                resolution = f"{360/g.n_track:0.2f}{DEGREE}"
-                sensors = ', '.join(str(i) for i in g.sensor_positions)
+                resolution = f"{360/g.n_track:0.2f}".rstrip('0').rstrip('.') + DEGREE
+                sensors = ', '.join(f"{360/g.n_track*s:.2f}".rstrip('0').rstrip('.') + DEGREE for s in g.sensor_positions)
                 track = f"{g.track:0{g.n_track}b}"
                 track = "<br>".join([track[i:i+15] for i in range(0, len(track), 15)])  # Split long tracks into groups of 15 character lines
                 lookup_values = []
