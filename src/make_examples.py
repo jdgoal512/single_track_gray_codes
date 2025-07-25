@@ -18,10 +18,14 @@ def main():
             plot(g, output_file)
     with open("examples/README.md", "w", encoding="utf-8") as md_file:
         md_file.write("# Example Single Track Gray Codes\n")
-        md_file.write("| Sensor Positions | Track | Position Lookup Table | Visualization |\n")
+        md_file.write("| Visualization | Sensor Positions | Track | Position Lookup Table |\n")
         md_file.write("| ---- | ---- | ---- | ---- |\n")
         for (g, visualization) in gray_codes:
-            md_file.write(f"| {', '.join(str(i) for i in g.sensor_positions)} | {g.track:0{g.n_track}b} | TODO | ![Animation]({visualization}) |\n")
+            sensors = ', '.join(str(i) for i in g.sensor_positions)
+            track = f"{g.track:0{g.n_track}b}"
+            lookup = "TODO"
+            image = f'<img src="{visualization}" alt="Animation" width="400" height="400">'
+            md_file.write(f"| {image} | {sensors} | {track} | {lookup} |\n")
 
 
 
