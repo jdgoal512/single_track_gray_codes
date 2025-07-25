@@ -23,6 +23,7 @@ def main():
         for (g, visualization) in gray_codes:
             sensors = ', '.join(str(i) for i in g.sensor_positions)
             track = f"{g.track:0{g.n_track}b}"
+            track = "<br>".join([track[i:i+15] for i in range(0, len(track), 15)])  # Split long tracks into groups of 15 character lines
             lookup = "TODO"
             image = f'<img src="{visualization}" alt="Animation" width="400" height="400">'
             md_file.write(f"| {image} | {sensors} | {track} | {lookup} |\n")
