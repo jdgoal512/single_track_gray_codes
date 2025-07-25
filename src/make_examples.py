@@ -25,7 +25,7 @@ def main():
         for i, gray_codes in gray_codes_by_n_sensors.items():
             md_file.write(f"## {i} Sensors")
             md_file.write("| Visualization | Track Size | Resolution | Sensor Positions | Track | Position Lookup Table |\n")
-            md_file.write("| ---- | ---- | ---- | ---- |\n")
+            md_file.write("| ---- | ---- | ---- | ---- | ---- | ---- |\n")
             for (g, visualization) in gray_codes:
                 resolution = f"{360/g.n_track:0.2f}{DEGREE}"
                 sensors = ', '.join(str(i) for i in g.sensor_positions)
