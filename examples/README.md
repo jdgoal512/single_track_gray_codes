@@ -1,5 +1,6 @@
 # Example Single Track Gray Codes
-## 1 Sensor| Visualization | Number of Positions | Resolution | Sensor Positions | Track | Position Lookup Table |
+## 1 Sensor
+| Visualization | Number of Positions | Resolution | Sensor Positions | Track | Position Lookup Table |
 | ---- | ---- | ---- | ---- | ---- | ---- |
 | <img src="1S_2T_20250725_085623.gif" alt="Animation" width="400" height="400"> | 2 | 180.00° | 0 | 10 | [0, 1] |
 ## 2 Sensors

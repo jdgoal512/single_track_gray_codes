@@ -24,7 +24,7 @@ def main():
         md_file.write("# Example Single Track Gray Codes\n")
         for i, gray_codes in gray_codes_by_n_sensors.items():
             if i == 1:
-                md_file.write("## 1 Sensor")
+                md_file.write("## 1 Sensor\n")
             else:
                 md_file.write(f"## {i} Sensors\n")
             md_file.write("| Visualization | Number of Positions | Resolution | Sensor Positions | Track | Position Lookup Table |\n")
